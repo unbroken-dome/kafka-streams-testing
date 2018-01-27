@@ -1,0 +1,48 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id 'nebula.optional-base' version '3.2.0'
+    id 'com.jfrog.bintray' version '1.8.0'
+}
+
+apply from: 'gradle/publishing.gradle'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    jcenter()
+}
+
+configurations {
+    testCompileOnly.extendsFrom compileOnly
+}
+
+dependencies {
+    api 'org.apache.kafka:kafka-clients:1.0.0'
+    api 'org.apache.kafka:kafka-streams:1.0.0'
+    implementation 'org.apache.kafka:kafka-clients:1.0.0:test'
+    implementation 'org.apache.kafka:kafka-streams:1.0.0:test'
+
+    api 'junit:junit:4.12', optional
+    api 'org.junit.jupiter:junit-jupiter-api:5.0.1', optional
+    api 'org.hamcrest:java-hamcrest:2.0.0.0'
+
+    compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
+    compileOnly 'org.apiguardian:apiguardian-api:1.0.0'
+
+    implementation 'org.slf4j:slf4j-api:1.7.25'
+    testRuntimeOnly 'ch.qos.logback:logback-classic:1.2.3'
+}
+
+
+configurations.all {
+    exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+
+    resolutionStrategy.dependencySubstitution {
+        substitute module('commons-logging:commons-logging') with module('org.slf4j:jcl-over-slf4j:1.7.25')
+        substitute module('log4j:log4j') with module('org.slf4j:log4j-over-slf4j:1.7.25')
+        substitute module('org.hamcrest:hamcrest-core') with module('org.hamcrest:java-hamcrest:2.0.0.0')
+        substitute module('org.rocksdb:rocksdbjni') with module('org.rocksdb:rocksdbjni:5.3.6')
+    }
+}
